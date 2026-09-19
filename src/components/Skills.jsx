@@ -21,7 +21,7 @@ const skillCategories = [
     title: 'AI & LLM Tooling', 
     desc: 'Integrating LLM-backed workflows using LangChain, LangGraph, RAG pipelines, and MCP.', 
     tag: 'INTELLIGENCE',
-    skills: ['LangChain', 'LangGraph', 'MCP', 'RAG', 'Prompt Engineering'] 
+    skills: ['LangChain', 'LangGraph', 'MCP', 'RAG', 'CrewAI', 'n8n', 'Agentic AI', 'Prompt Engineering'] 
   },
   { 
     title: 'Cloud & DevOps', 
