@@ -134,7 +134,7 @@ const Hero = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full h-screen bg-[#050505] overflow-hidden flex flex-col justify-between select-none cursor-none"
+      className="relative w-full min-h-screen lg:h-screen bg-[#050505] lg:overflow-hidden flex flex-col justify-between select-none cursor-none"
     >
       <style>{`
         @keyframes marquee {
@@ -171,7 +171,7 @@ const Hero = () => {
       ></div>
 
       {/* 3. Main Content Layer */}
-      <div ref={contentRef} className="relative z-20 w-full max-w-7xl mx-auto px-6 md:px-12 h-full flex flex-col justify-between pt-24 pb-12">
+      <div ref={contentRef} className="relative z-20 w-full max-w-7xl mx-auto px-6 md:px-12 lg:h-full flex flex-col justify-between pt-28 pb-16 lg:pt-24 lg:pb-12 gap-10 lg:gap-0">
         
         {/* Top Netflix Cinematic Badge */}
         <div className="hero-anim-item flex items-center justify-between w-full">
