@@ -162,6 +162,35 @@ const Projects = () => {
   const mobileCardsRef = useRef([]);
   const mobileCarouselRef = useRef(null);
 
+  const handleMobileScroll = (e) => {
+    const container = e.target;
+    const center = container.scrollLeft + container.offsetWidth / 2;
+
+    let activeIdx = 0;
+    let minDiff = Infinity;
+
+    mobileCardsRef.current.forEach((card, i) => {
+      if (!card) return;
+      const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+      const diff = Math.abs(cardCenter - center);
+      if (diff < minDiff) {
+        minDiff = diff;
+        activeIdx = i;
+      }
+    });
+
+    mobileCardsRef.current.forEach((card, i) => {
+      if (!card) return;
+      gsap.to(card, {
+        scale: i === activeIdx ? 1 : 0.92,
+        opacity: i === activeIdx ? 1 : 0.5,
+        duration: 0.35,
+        ease: "power2.out",
+        overwrite: "auto"
+      });
+    });
+  };
+
   useEffect(() => {
     let ctx = gsap.context(() => {
       // Set initial origins (Centered in viewport)
@@ -426,6 +455,7 @@ const Projects = () => {
       {/* Mobile Swipeable Carousel */}
       <div 
         ref={mobileCarouselRef}
+        onScroll={handleMobileScroll}
         className="md:hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-screen h-auto py-12 flex items-center gap-6 px-[12.5vw] pointer-events-none z-[100] snap-x snap-mandatory overflow-x-hidden hide-scrollbar"
       >
         <style>{`
