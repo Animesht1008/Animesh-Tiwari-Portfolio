@@ -49,39 +49,6 @@ const Skills = () => {
   const bgRefs = useRef([]);
   const textRefs = useRef([]);
 
-  const handleScroll = (e) => {
-    if (window.innerWidth >= 769) return;
-    const container = e.target;
-    const center = container.scrollLeft + container.offsetWidth / 2;
-    
-    let activeIdx = 0;
-    let minDiff = Infinity;
-    
-    cardsRef.current.forEach((card, i) => {
-      if (!card) return;
-      const cardCenter = card.offsetLeft + card.offsetWidth / 2;
-      const diff = Math.abs(cardCenter - center);
-      if (diff < minDiff) {
-        minDiff = diff;
-        activeIdx = i;
-      }
-    });
-
-    cardsRef.current.forEach((card, i) => {
-      if (card) {
-        gsap.to(card, { scale: i === activeIdx ? 1 : 0.9, duration: 0.4, ease: "power2.out", overwrite: "auto" });
-      }
-    });
-
-    bgRefs.current.forEach((bg, i) => {
-      if (bg) gsap.to(bg, { opacity: i === activeIdx ? 1 : 0, duration: 0.4, overwrite: "auto" });
-    });
-    
-    textRefs.current.forEach((txt, i) => {
-      if (txt) gsap.to(txt, { opacity: i === activeIdx ? 1 : 0, duration: 0.4, overwrite: "auto" });
-    });
-  };
-
   useLayoutEffect(() => {
     let ctx = gsap.context(() => {
       let mm = gsap.matchMedia();
@@ -147,19 +114,24 @@ const Skills = () => {
       });
 
       mm.add("(max-width: 768px)", () => {
-        cardsRef.current.forEach((card, i) => {
-           if (card) {
-             gsap.set(card, { clearProps: "x,y,z,rotation,scale,opacity,position" });
-             gsap.set(card, { scale: i === 0 ? 1 : 0.9 });
-           }
-        });
-        
-        bgRefs.current.forEach((bg, i) => {
-           if (bg) gsap.set(bg, { clearProps: "all", opacity: i === 0 ? 1 : 0 });
-        });
-        
-        textRefs.current.forEach((txt, i) => {
-           if (txt) gsap.set(txt, { clearProps: "all", opacity: i === 0 ? 1 : 0 });
+        cardsRef.current.forEach((card) => {
+          if (!card) return;
+          gsap.set(card, { clearProps: "all" });
+          gsap.fromTo(
+            card,
+            { opacity: 0, y: 40 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.7,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: card,
+                start: "top 88%",
+                toggleActions: "play none none reverse"
+              }
+            }
+          );
         });
       });
 
@@ -172,24 +144,24 @@ const Skills = () => {
     <section 
       id="skills"
       ref={sectionRef} 
-      className="relative w-full h-screen bg-[#0b0b0b] text-white overflow-hidden flex items-center justify-center md:[perspective:1000px] select-none"
+      className="relative w-full md:h-screen bg-[#0b0b0b] text-white overflow-hidden flex items-center justify-center md:[perspective:1000px] select-none py-24 md:py-0"
     >
-      {/* Dynamic Netflix Dark Background Vignettes */}
+      {/* Dynamic Netflix Dark Background Vignettes (desktop coverflow only) */}
       {skillCategories.map((_, i) => (
         <div 
           key={i}
           ref={el => bgRefs.current[i] = el}
-          className="absolute inset-0 z-0 pointer-events-none opacity-0 bg-gradient-to-tr from-black via-[#140203] to-black"
+          className="hidden md:block absolute inset-0 z-0 pointer-events-none opacity-0 bg-gradient-to-tr from-black via-[#140203] to-black"
         />
       ))}
 
-      {/* Massive Background Typography (Netflix Red & White Outline) */}
-      <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+      {/* Massive Background Typography (desktop coverflow only) */}
+      <div className="hidden md:flex absolute inset-0 items-center justify-center z-0 pointer-events-none">
         {skillCategories.map((_, i) => (
           <h1 
             key={`text-${i}`}
             ref={el => textRefs.current[i] = el}
-            className="absolute text-[22vw] md:text-[18vw] font-black uppercase text-transparent leading-none tracking-tighter mix-blend-overlay"
+            className="absolute text-[18vw] font-black uppercase text-transparent leading-none tracking-tighter mix-blend-overlay"
             style={{ 
                WebkitTextStroke: `2px ${i % 2 === 0 ? 'rgba(229,9,20,0.3)' : 'rgba(255,255,255,0.15)'}`,
                opacity: 0 
@@ -200,16 +172,21 @@ const Skills = () => {
         ))}
       </div>
 
-      {/* Carousel Container */}
+      {/* Section heading (mobile only — desktop relies on the background typography) */}
+      <div className="md:hidden absolute top-8 left-0 right-0 flex flex-col items-center gap-1 z-10 px-6 text-center">
+        <span className="text-[10px] font-mono uppercase tracking-widest text-red-500 font-bold">Skill Set</span>
+        <h2 className="text-2xl font-black text-white tracking-tight">Tools & Expertise</h2>
+      </div>
+
+      {/* Cards: plain vertical stack on mobile, absolute-positioned 3D coverflow at md+ */}
       <div 
-        className="relative w-full h-full flex md:items-center md:justify-center z-10 md:[transform-style:preserve-3d] overflow-x-auto overflow-y-hidden md:overflow-visible snap-x snap-mandatory scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] items-center px-[10vw] md:px-0 gap-4 md:gap-0 touch-pan-x"
-        onScroll={handleScroll}
+        className="relative w-full md:h-full flex flex-col md:flex-row md:items-center md:justify-center z-10 md:[transform-style:preserve-3d] gap-6 md:gap-0 px-6 md:px-0 pt-16 md:pt-0"
       >
         {skillCategories.map((category, i) => (
           <div 
             key={i}
             ref={el => cardsRef.current[i] = el}
-            className="md:absolute relative shrink-0 snap-center w-[82vw] sm:w-[360px] md:w-[440px] h-[460px] md:h-[540px] rounded-[32px] p-8 md:p-10 bg-[#141414]/95 backdrop-blur-2xl border border-white/15 flex flex-col justify-between overflow-hidden group shadow-[0_30px_60px_rgba(0,0,0,0.9)] hover:border-red-600/80 transition-colors duration-500"
+            className="md:absolute relative w-full max-w-md mx-auto md:w-[440px] md:mx-0 h-auto md:h-[540px] rounded-[32px] p-8 md:p-10 bg-[#141414]/95 backdrop-blur-2xl border border-white/15 flex flex-col justify-between overflow-hidden group shadow-[0_30px_60px_rgba(0,0,0,0.9)] hover:border-red-600/80 transition-colors duration-500"
           >
             {/* Inner Red Glossy Reflection */}
             <div className="absolute inset-0 bg-gradient-to-tr from-red-600/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-20" />
@@ -220,7 +197,7 @@ const Skills = () => {
                 {category.tag}
               </span>
               <span className="text-xs font-mono text-white/40">
-                [ 0{i + 1} / 06 ]
+                [ 0{i + 1} / 0{skillCategories.length} ]
               </span>
             </div>
 
